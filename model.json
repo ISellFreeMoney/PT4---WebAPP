@@ -355,7 +355,7 @@
   "weightsManifest":
   [
     {
-      "paths": ["models/group1-shard1of2.bin", "models/group1-shard2of2.bin"],
+      "paths": ["./models/group1-shard1of2.bin", "./models/group1-shard2of2.bin"],
       "weights":
       [
         {
