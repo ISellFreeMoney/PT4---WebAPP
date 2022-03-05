@@ -13,13 +13,13 @@ button.onclick = () => {
     input.click();
 };
 
-
 input.addEventListener('change', function(){
     file = this.files[0]; // On récupère le fichier choisi
     dropArea.classList.add('active');
     affFile();
-    guessImage()
-});   
+    guessImage();
+
+});
 
 
 // Si l'utiliateur passe au dessus de la zone de drop
@@ -50,6 +50,7 @@ dropArea.addEventListener('drop', (e) => {
     guessImage();
 });
 
+// Affiche l'image dans la zone de drop
 function affFile(){
     let fileType = file.type;
     //console.log(fileType);
@@ -63,10 +64,8 @@ function affFile(){
         let reader = new FileReader();
         reader.onload = () => {
             let fileURL = reader.result;
-            // creer une balise img avec l'url du fichier
-            let imgTag = `<img src="${fileURL}" alt="">`;
             // afficher l'image dans la zone de dro
-            dropArea.innerHTML = imgTag;
+            dropArea.innerHTML = `<img src="${fileURL}" alt="">`;
         }
         reader.readAsDataURL(file);
     }
@@ -79,22 +78,36 @@ function affFile(){
 
 const classes=['Asterix','Obelix']
 
+// Predit la classe de l'image
 function guessImage(){
     model.then(function (res) {
-        // Convert the image into the right TensorFlow format
-        let example = tf.browser.fromPixels(file).expandDims();
-        // Change the size
-        example = tf.file.resizeBilinear(example, [150, 150]).div(tf.scalar(255))
-        // Cast to float
-        example = tf.cast(example, dtype = 'float32');
+        let fileType = file.type;
+        //console.log(fileType);
+        // Verifier le type de fichier
+        // tableau de type de fichier valides
+        let validType = ['image/png', 'image/jpeg', "image/webp", "image/jpg"];
+        // si le type de fichier est valide
+        if (validType.includes(fileType)) {
+            const im = new Image();
+            var fr = new FileReader();
+            fr.onload = function () {
+                im.src = fr.result;
+            }
+            fr.readAsDataURL(file);
+            im.onload = () => {
+                let a = tf.browser.fromPixels(im).expandDims();
+                a = tf.image.resizeBilinear(a, [150, 150]).div(tf.scalar(255));
+                a = tf.cast(a, dtype = 'float32');
 
-        // Predict the class
-        let prediction = res.predict(example);
-        figurineClass=Math.round (prediction.dataSync());
-        console.log(figurineClass);
-
+                let prediction = res.predict(a);
+                figurineClass = Math.round(prediction.dataSync());
+                alert(classes[figurineClass]);
+                console.log(figurineClass);
+            }
+        }
     }, function (err) {
         console.log(err);
     });
+
 }
 
