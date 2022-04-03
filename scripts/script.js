@@ -9,6 +9,7 @@ const model = tf.loadLayersModel('model.json');
 let file;
 
 button.onclick = () => {
+    console.log('click');
     // Si l'utilisateur clique sur le bouton, on lui demande de choisir un fichier
     input.click();
 };
@@ -19,6 +20,21 @@ input.addEventListener('change', function(){
     affFile();
     guessImage();
 
+});
+
+// Permet de redemarrer le processus en cliquant a nouveau sur l'image
+dropArea.addEventListener('click', function(){
+    if(dropArea.classList.contains('active')) {
+        dropArea.classList.remove('active');
+        input.value = '';
+        dropArea.innerHTML =
+            '        <div class="icon"> <i class="fas fa-cloud-upload-alt"></i> </div>\n' +
+            '        <header> Glisser et deposer pour upload le fichier </header>\n' +
+            '        <span>OU</span>\n' +
+            '        <button> Importer un fichier </button>\n' +
+            '        <input type="file" hidden>';
+            button.click();
+    }
 });
 
 
